@@ -31,14 +31,14 @@ export default async function BlogPage({ params: { slug } }) {
   const article = await fetchBlogPost(slug);
 
   const { title, date, content } = article.fields;
-  console.log(content);
 
   const options = {
     renderNode: {
       [BLOCKS.EMBEDDED_ASSET]: (node) => {
-        console.log(node.data.target.fields);
-        const { title, file: { url } } = node.data.target.fields;
-        return <img alt={title} src={url} /> 
+        const { title, file: { url, contentType } } = node.data.target.fields;
+        if (["image/png", "image/jpeg"].includes(contentType)) {
+          return <img alt={title} src={url} />;
+        }
       }
     }
   };
