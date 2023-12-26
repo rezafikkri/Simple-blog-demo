@@ -1,5 +1,6 @@
 import { createClient } from "contentful";
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
+import { BLOCKS } from '@contentful/rich-text-types';
 
 const client = createClient({
   space: process.env.SPACE_ID,
@@ -30,6 +31,17 @@ export default async function BlogPage({ params: { slug } }) {
   const article = await fetchBlogPost(slug);
 
   const { title, date, content } = article.fields;
+  console.log(content);
+
+  const options = {
+    renderNode: {
+      [BLOCKS.EMBEDDED_ASSET]: (node) => {
+        console.log(node.data.target.fields);
+        const { title, file: { url } } = node.data.target.fields;
+        return <img alt={title} src={url} /> 
+      }
+    }
+  };
 
   return (
     <main className="min-h-screen p-24 flex justify-center">
@@ -44,7 +56,7 @@ export default async function BlogPage({ params: { slug } }) {
           })}
         </p>
         <div className="[&>p]:mb-8 [&>h2]:font-extrabold">
-          { documentToReactComponents(content) }
+          { documentToReactComponents(content, options) }
         </div>
       </div>
     </main>
